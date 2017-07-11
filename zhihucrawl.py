@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+#encoding=utf-8
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 from bs4 import BeautifulSoup
 import urllib2
 import re
@@ -29,9 +35,10 @@ def download_pagedata(soup,page_url):
     followers = soup.find(class_ = "zm-topic-side-followers-info")
     try:
         followers = followers.contents[1].get_text()
-    except:
+    except Exception as e:
+        print e
         followers = None
-    print title.get_text(),'followers:',followers,page_url
+    print title.get_text().encode('utf-8'),'followers:',followers,page_url
     topic['title'] = title.get_text()
     topic['url'] = page_url
     topic['followers'] = followers
@@ -49,8 +56,8 @@ def add_new_urls(urls,targetbase):
 def get_url(sourcebase):
     return sourcebase.pop()
 
-def has_url(sourceebase):
-    if new_urlbase == None:
+def has_url(sourcebase):
+    if sourcebase == None:
         return False
     else:
         return True
@@ -78,7 +85,8 @@ def output(datasource):
                 f.write('<td style="width:10%%;">%s</td>' % data['followers'])
                 f.write('</tr>')
                 count = count + 1
-            except:
+            except Exception as e:
+                print e
                 continue
         f.write('</table>')
         f.write('</body>')
@@ -95,6 +103,7 @@ if __name__ == '__main__':
     start_url = "https://www.zhihu.com/topic/19776749/hot"
     count = 1
 
+    n = input("input a number:")
     new_urlbase.add(start_url)
     while has_url(new_urlbase):
         try:
@@ -114,10 +123,11 @@ if __name__ == '__main__':
             topicbase.append(download_pagedata(htmlPageObj,url))
             print count,"add",len(urls),"urls","newurlbase:",len(new_urlbase)," oldurlbase:",len(old_urlbase)
             print "*******************"
-            if count == 1000:
+            if count == n:
                 break
             count = count + 1
-        except:
+        except Exception as e:
+            print e
             print 'failed'
     print "crawl end,start output"
 
